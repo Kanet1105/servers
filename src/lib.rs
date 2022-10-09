@@ -1,10 +1,15 @@
+mod features;
+mod pages;
+
+pub mod prelude {}
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize)]
-pub struct WebApp;
+struct WebApp;
 
 impl WebApp {
-    pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
+    fn new(cc: &eframe::CreationContext<'_>) -> Self {
         if let Some(storage) = cc.storage {
             return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
         }
@@ -25,7 +30,7 @@ impl eframe::App for WebApp {
 }
 
 #[cfg(target_arch = "wasm32")]
-pub fn run_app() {
+pub fn run() {
     // Make sure panics are logged using `console.error`.
     console_error_panic_hook::set_once();
 
