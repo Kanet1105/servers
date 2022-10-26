@@ -1,6 +1,6 @@
 mod configs;
 
-use actix_web::{get, post, App, HttpServer};
+use actix_web::{App, HttpServer};
 use configs::Configs;
 use tracing::info;
 
