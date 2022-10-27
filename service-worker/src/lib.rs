@@ -2,6 +2,7 @@ mod configs;
 mod data;
 
 use actix_web::{web, App, HttpServer, HttpRequest, HttpResponse, Responder};
+use actix_web_actors::ws;
 use configs::Configs;
 use data::AppData;
 use tracing::info;
@@ -12,7 +13,10 @@ pub async fn health_check(request: HttpRequest) -> impl Responder {
 }
 
 pub async fn join_key(request: HttpRequest, app_data: web::Data<AppData>) -> impl Responder {
-    // Add a keygen
+    HttpResponse::Ok()
+}
+
+pub async fn join(request: HttpRequest, stream: web::Payload) -> impl Responder {
     HttpResponse::Ok()
 }
 
@@ -24,7 +28,7 @@ pub async fn run_app() -> Result<(), Box<dyn std::error::Error>> {
         App::new()
             .app_data(web::Data::new(AppData::new()))
             .route("/health_check", web::get().to(health_check))
-            .route("/join_key", web::get().to(join_key))
+            .route("/join", web::post().to(join))
     })
     .bind((configs.ip, configs.port))?
     .run()
