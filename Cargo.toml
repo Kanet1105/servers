@@ -3,4 +3,5 @@
 members = [
     "service-worker",
     "template",
+    "test-server",
 ]
