@@ -1,15 +1,17 @@
 mod config;
+mod data;
+mod message;
 
-use bytes::Bytes;
 use config::Configuration;
+use data::AppData;
 use std::{
     collections::HashMap,
     net::SocketAddr,
     sync::{Arc, Mutex},
 };
 use tokio::{
-    io::{self, AsyncBufReadExt, AsyncWriteExt, AsyncReadExt},
-    net::TcpListener,
+    io::{self, AsyncReadExt, AsyncWriteExt},
+    net::{TcpListener, TcpStream},
 };
 use tracing::info;
 
@@ -17,26 +19,39 @@ pub type Exception = Box<dyn std::error::Error + Send + Sync>;
 pub type Result<T> = std::result::Result<T, Exception>;
 
 pub async fn run() -> Result<()> {
-    let config = Arc::new(Configuration::from_file("./Config.toml"));
-    let listener = TcpListener::bind(&format!("{}:{}", config.ip, config.port)).await?;
-    info!("The server's running on '{}:{}'", config.ip, config.port);
+    let data = AppData::new().with_config("./Config.toml").init();
+    let ip_port = format!("{}:{}", data.config.ip, data.config.port);
+    let listener = TcpListener::bind(&ip_port).await?;
+    info!("The server's running on '{}'", ip_port);
 
     loop {
-        let (stream, address) = listener.accept().await?;
-        let (mut reader, mut writer) = io::split(stream);
-        let mut buffer = vec![0; 128];
-        info!("Connected from {:?}", &address);
+        let (mut stream, address) = listener.accept().await?;
+        stream.shutdown().await?;
+        
+        // let (mut reader, mut writer) = io::split(stream);
+        // let mut buffer = vec![0; 16];
+        // info!("Connected from {:?}", &address);
 
-        tokio::spawn(async move {
-            loop {
-                let n = reader.read(&mut buffer).await.unwrap();
-                if n == 0 {
-                    break;
-                }
-                info!("Got {:?}", &buffer[..n]);
-            }
-        });
+        // tokio::spawn(async move {
+        //     loop {
+        //         let n = match reader.read(&mut buffer).await {
+        //             Ok(n) => n,
+        //             Err(e) => {
+        //                 info!("{:?}", e);
+        //                 break;
+        //             },
+        //         };
+        //         if n == 0 {
+        //             break;
+        //         }
+        //         info!("Got {:?}", &buffer[..n]);
+        //     }
+        // });
     }
 
+    Ok(())
+}
+
+pub async fn handler() -> Result<()> {
     Ok(())
 }
