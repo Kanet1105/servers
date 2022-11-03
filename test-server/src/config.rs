@@ -5,6 +5,7 @@ use std::{fs, path::PathBuf};
 pub struct Configuration {
     pub ip: String,
     pub port: u16,
+    pub concurrency_limit: u16,
 }
 
 impl Configuration {
@@ -26,6 +27,7 @@ impl Default for Configuration {
         Self {
             ip: "127.0.0.1".to_string(),
             port: 50000,
+            concurrency_limit: 10000,
         }
     }
 }
