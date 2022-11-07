@@ -1,11 +1,10 @@
 use crate::{Buf, BufMut};
 use std::str::from_utf8;
 
-#[repr(C)]
 #[derive(Debug)]
 pub struct SimpleText {
-    channel: String,
-    contents: String,
+    pub channel: String,
+    pub contents: String,
 }
 
 impl super::Message for SimpleText {

@@ -2,6 +2,7 @@ mod custom;
 mod errors;
 
 pub use bytes::{Buf, BufMut, BytesMut};
+pub use custom::SimpleText;
 pub use errors::*;
 
 pub trait Message {
@@ -25,9 +26,6 @@ pub fn deserialize_with_capacity<T>(buffer: &mut BytesMut, data: &mut T) -> Resu
 where
     T: Message,
 {
-    if data.len() != buffer.len() {
-        return Err(MessageError::IncompleteBuffer);
-    }
     data.deserialize(buffer);
     Ok(())
 }
