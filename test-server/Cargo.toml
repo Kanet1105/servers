@@ -21,3 +21,5 @@ tokio-stream = "0.1.11"
 toml = "0.4.2"
 tracing-subscriber = { version = "0.3", features = ["local-time"] }
 tracing = "0.1"
+
+message = { path = "../message" }
