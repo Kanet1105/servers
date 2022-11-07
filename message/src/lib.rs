@@ -1,6 +1,6 @@
 mod errors;
 
-use bytes::{BytesMut, Buf, BufMut};
+use bytes::{BytesMut};
 use errors::*;
 
 pub trait Message {
