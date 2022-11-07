@@ -1,7 +1,8 @@
+mod custom;
 mod errors;
 
-use bytes::{BytesMut};
-use errors::*;
+pub use bytes::{Buf, BufMut, BytesMut};
+pub use errors::*;
 
 pub trait Message {
     fn len(&self) -> usize;
@@ -20,12 +21,12 @@ where
     Ok(())
 }
 
-pub fn deserialize_with_capacity<T>(buffer: &mut BytesMut, data: &mut T) -> Result<(), MessageError>
+pub fn deserialize_with_capacity<'a, T>(buffer: &'a mut BytesMut, data: &mut T) -> Result<(), MessageError>
 where
     T: Message,
 {
-    if data.len() < buffer.len() {
-        return Err(MessageError::ExceedDataLength)
+    if data.len() != buffer.len() {
+        return Err(MessageError::IncompleteBuffer);
     }
     data.deserialize(buffer);
     Ok(())

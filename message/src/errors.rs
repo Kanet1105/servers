@@ -1,11 +1,11 @@
 use std::{
-    fmt::{Debug, Display},
     error::Error,
+    fmt::{Debug, Display},
 };
 
 pub enum MessageError {
     ExceedBufferCapacity,
-    ExceedDataLength,
+    IncompleteBuffer,
 }
 
 impl Debug for MessageError {
@@ -17,8 +17,12 @@ impl Debug for MessageError {
 impl Display for MessageError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::ExceedBufferCapacity => write!(f, "The message length exceeds the buffer length."),
-            Self::ExceedDataLength => write!(f, "The buffer length exceeds the data struct length."),
+            Self::ExceedBufferCapacity => {
+                write!(f, "The message length exceeds the buffer length.")
+            }
+            Self::IncompleteBuffer => {
+                write!(f, "The buffer length does not match the struct length.")
+            }
         }
     }
 }
