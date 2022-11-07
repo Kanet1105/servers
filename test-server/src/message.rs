@@ -1,4 +1,4 @@
-use bytes::{BytesMut, BufMut};
+use bytes::{BytesMut, Buf, BufMut};
 use tokio::io::copy;
 
 pub trait Packet {
@@ -50,9 +50,31 @@ fn serialize() {
 }
 
 #[test]
-fn deserialize() {
-    let mut buffer = BytesMut::with_capacity(1);
-    buffer.put_slice(&(123 as u64).to_be_bytes());
-    buffer.put_slice(&(456 as u64).to_be_bytes());
-    
+fn serialize_deserialize() {
+    #[repr(C)]
+    #[derive(Debug)]
+    struct Coordinates {
+        x: f32,
+        y: f32,
+    }
+
+    let a = Coordinates {
+        x: 12.345,
+        y: 67.890,
+    };
+
+    let mut b = Coordinates {
+        x: 0.0,
+        y: 0.0,
+    };
+
+    let mut buffer = BytesMut::with_capacity(8);
+    buffer.put_slice(&a.x.to_be_bytes());
+    buffer.put_slice(&a.y.to_be_bytes());
+    println!("buffer: {:?}; len: {:?}", buffer, buffer.len());
+
+    b.x = buffer.get_f32();
+    b.y = buffer.get_f32();
+    println!("{:?}", b);
+    println!("buffer: {:?}; len: {:?}", buffer, buffer.len());
 }
