@@ -5,4 +5,5 @@ members = [
     "template",
     "test-client",
     "test-server",
+    "message",
 ]
