@@ -1,4 +1,5 @@
-use crate::{Buf, BufMut, BytesMut};
+use crate::{Buf, BufMut};
+use std::str::from_utf8;
 
 #[repr(C)]
 #[derive(Debug)]
@@ -20,13 +21,21 @@ impl super::Message for SimpleText {
         buffer.put_slice(self.contents.as_bytes());
     }
 
-    fn deserialize(&mut self, buffer: &bytes::BytesMut) {
+    fn deserialize(&mut self, buffer: &mut bytes::BytesMut) {
+        let channel_len = buffer.get_u64() as usize;
+        self.channel = from_utf8(&buffer[0..channel_len]).unwrap().into();
+        buffer.advance(channel_len);
         
+        let contents_len = buffer.get_u64() as usize;
+        self.contents = from_utf8(&buffer[0..contents_len]).unwrap().into();
+        buffer.advance(contents_len);
     }
 }
 
 #[test]
 fn example() {
+    use bytes::BytesMut;
+    
     let a = "Hello, world".to_string();
     let mut buffer = BytesMut::new();
 
