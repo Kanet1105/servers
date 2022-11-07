@@ -7,7 +7,7 @@ pub use errors::*;
 pub trait Message {
     fn len(&self) -> usize;
     fn serialize(&self, buffer: &mut BytesMut);
-    fn deserialize(&mut self, buffer: &BytesMut);
+    fn deserialize(&mut self, buffer: &mut BytesMut);
 }
 
 pub fn serialize_with_capacity<T>(buffer: &mut BytesMut, data: &T) -> Result<(), MessageError>
@@ -21,7 +21,7 @@ where
     Ok(())
 }
 
-pub fn deserialize_with_capacity<'a, T>(buffer: &'a mut BytesMut, data: &mut T) -> Result<(), MessageError>
+pub fn deserialize_with_capacity<T>(buffer: &mut BytesMut, data: &mut T) -> Result<(), MessageError>
 where
     T: Message,
 {
