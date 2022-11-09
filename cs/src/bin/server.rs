@@ -7,6 +7,6 @@ async fn main() -> Result<()> {
         .with_timer(time::LocalTime::rfc_3339())
         .init();
     // cs::run_tcp().await?;
-    cs::run_udp().await?;
+    cs::run_server().await?;
     Ok(())
 }
