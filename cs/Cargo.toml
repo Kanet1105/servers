@@ -1,0 +1,34 @@
+[package]
+name = "cs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "client"
+path = "src/bin/client.rs"
+
+[[bin]]
+name = "server"
+path = "src/bin/server.rs"
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "parse"
+harness = false
+
+[lib]
+crate-type = ["rlib"]
+
+[dependencies]
+bytes = "1"
+futures = "0.3"
+serde = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+tokio-stream = "0.1.11"
+toml = "0.4.2"
+tracing-subscriber = { version = "0.3", features = ["local-time"] }
+tracing = "0.1"
