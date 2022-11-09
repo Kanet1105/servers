@@ -6,4 +6,5 @@ members = [
     "test-client",
     "test-server",
     "message",
+    "cs",
 ]
