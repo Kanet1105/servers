@@ -14,7 +14,8 @@ impl Configuration {
 
         if path.exists() {
             let file = fs::read_to_string(path).expect("Failed to read the config file.");
-            let config: Configuration = toml::from_str(&file).expect("Failed to parse the config file.");
+            let config: Configuration =
+                toml::from_str(&file).expect("Failed to parse the config file.");
             config
         } else {
             Self::default()

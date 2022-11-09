@@ -1,9 +1,6 @@
 mod config;
 
 pub mod prelude {
-    pub type Error = Box<dyn std::error::Error>;
-    pub type Result<T> = std::result::Result<T, Error>;
-
     pub use crate::config::Configuration;
 
     pub use bytes::{Buf, BufMut, BytesMut};
@@ -13,6 +10,9 @@ pub mod prelude {
     };
     pub use tokio::net::UdpSocket;
     pub use tracing::{error, info};
+
+    pub type Error = Box<dyn std::error::Error>;
+    pub type Result<T> = std::result::Result<T, Error>;
 }
 
 use crate::prelude::*;
@@ -31,14 +31,14 @@ pub async fn run_server() -> Result<()> {
                 let text = from_utf8(&buffer[0..len])?;
                 info!("Received {} bytes: {:?}", n, text);
                 buffer.advance(len);
-            },
+            }
             Err(ref e) if e.kind() == ErrorKind::WouldBlock => {
                 continue;
-            },
+            }
             Err(e) => {
                 error!("{}", e);
                 return Err(Box::new(e));
-            },
+            }
         }
     }
 }
@@ -51,7 +51,7 @@ pub async fn run_client() -> Result<()> {
     loop {
         let mut text = String::new();
         stdin().read_line(&mut text).unwrap();
-        
+
         buffer.put_u64(text.trim().len() as u64);
         buffer.put_slice(text.trim().as_bytes());
         socket.try_send(buffer.as_ref())?;
