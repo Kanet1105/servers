@@ -29,7 +29,12 @@ pub async fn run_server() -> Result<()> {
     info!("Starting the server on {:?}", socket.local_addr()?);
     let mut buffer = BytesMut::with_capacity(8192);
 
-    tokio::spawn(async move {});
+    tokio::spawn(async move {
+        loop {
+            sleep(Duration::from_millis(1000)).await;
+            info!{"alarm!"};
+        }
+    });
 
     loop {
         match socket.try_recv_buf_from(&mut buffer) {
