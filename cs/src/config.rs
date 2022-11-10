@@ -6,6 +6,7 @@ pub struct Configuration {
     pub ip: String,
     pub port: u16,
     pub concurrency_limit: u16,
+    pub sync_interval: f32, // milliseconds.
 }
 
 impl Configuration {
@@ -29,6 +30,7 @@ impl Default for Configuration {
             ip: "127.0.0.1".to_string(),
             port: 50000,
             concurrency_limit: 10000,
+            sync_interval: 10.0,
         }
     }
 }
