@@ -7,4 +7,5 @@ members = [
     "test-server",
     "message",
     "cs",
+    "load-balancer",
 ]
