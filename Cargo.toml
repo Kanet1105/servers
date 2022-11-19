@@ -1,0 +1,7 @@
+[workspace]
+
+member = [
+    "cs",
+    "message",
+    "template",
+]
