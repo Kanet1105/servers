@@ -1,6 +1,6 @@
 [workspace]
 
-member = [
+members = [
     "cs",
     "message",
     "template",
