@@ -6,7 +6,7 @@ async fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .with_timer(time::LocalTime::rfc_3339())
         .init();
-    // cs::run_tcp().await?;
-    cs::run_server().await?;
+    cs::udp_server().await?;
+    // cs::tcp_server().await?;
     Ok(())
 }

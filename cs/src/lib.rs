@@ -10,7 +10,7 @@ pub mod prelude {
         str::from_utf8,
     };
     pub use tokio::{
-        net::UdpSocket,
+        net::{TcpListener, TcpStream, UdpSocket},
         sync::mpsc,
         task::spawn_blocking,
         time::{sleep, Duration, Instant},
@@ -23,7 +23,7 @@ pub mod prelude {
 
 use crate::prelude::*;
 
-pub async fn run_server() -> Result<()> {
+pub async fn udp_server() -> Result<()> {
     let config = Configuration::from_file("./Config.toml");
     let socket = UdpSocket::bind(format!("{}:{}", config.ip, config.port)).await?;
     info!("Starting the server on {:?}", socket.local_addr()?);
@@ -32,7 +32,7 @@ pub async fn run_server() -> Result<()> {
     tokio::spawn(async move {
         loop {
             sleep(Duration::from_millis(1000)).await;
-            info!{"alarm!"};
+            info! {"alarm!"};
         }
     });
 
@@ -62,7 +62,7 @@ pub async fn run_server() -> Result<()> {
     Ok(())
 }
 
-pub async fn run_client() -> Result<()> {
+pub async fn udp_client() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
     let address = format!("127.0.0.1:{}", args[1]);
 
@@ -78,6 +78,57 @@ pub async fn run_client() -> Result<()> {
         buffer.put_u64(text.trim().len() as u64);
         buffer.put_slice(text.trim().as_bytes());
         socket.try_send(buffer.as_ref())?;
+        buffer.clear();
+    }
+}
+
+pub async fn tcp_server() -> Result<()> {
+    let config = Configuration::from_file("./Config.toml");
+    let listener = TcpListener::bind(format!("{}:{}", config.ip, config.port)).await?;
+
+    loop {
+        let (stream, _addr) = listener.accept().await?;
+        tokio::spawn(async move {
+            let mut buffer = BytesMut::with_capacity(1024);
+            loop {
+                match stream.try_read_buf(&mut buffer) {
+                    Ok(0) => {
+                        error!("Readhalf of the stream is closed.");
+                        break;
+                    },
+                    Ok(n) => {
+                        info!("From: {}", stream.local_addr().unwrap());
+                        let len = buffer.get_u64() as usize;
+                        let text = from_utf8(&buffer[0..len]).unwrap();
+                        info!("Received {} bytes: {:?}", n, text);
+                        buffer.advance(len);
+                        info!("===================================");
+                    }
+                    Err(ref e) if e.kind() == ErrorKind::WouldBlock => {
+                        continue;
+                    },
+                    Err(e) => {
+                        error!("{}", e);
+                        break;
+                    }
+                }
+            }
+        });
+    }
+}
+
+pub async fn tcp_client() -> Result<()> {
+    let config = Configuration::from_file("./Config.toml");
+    let stream = TcpStream::connect(format!("{}:{}", config.ip, config.port)).await?;
+    let mut buffer = BytesMut::with_capacity(1024);
+
+    loop {
+        let mut text = String::new();
+        stdin().read_line(&mut text).unwrap();
+
+        buffer.put_u64(text.trim().len() as u64);
+        buffer.put_slice(text.trim().as_bytes());
+        stream.try_write(buffer.as_ref())?;
         buffer.clear();
     }
 }
