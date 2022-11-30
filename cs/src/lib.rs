@@ -1,27 +1,18 @@
 mod config;
 
 pub mod prelude {
+    pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
     pub use crate::config::Configuration;
-
-    pub use bytes::{Buf, BufMut, BytesMut};
-    pub use std::{
-        io::{stdin, ErrorKind},
-        net::SocketAddr,
-        str::from_utf8,
-    };
-    pub use tokio::{
-        net::{TcpListener, TcpStream, UdpSocket},
-        sync::mpsc,
-        task::spawn_blocking,
-        time::{sleep, Duration, Instant},
-    };
-    pub use tracing::{error, info};
-
-    pub type Error = Box<dyn std::error::Error>;
-    pub type Result<T> = std::result::Result<T, Error>;
 }
 
 use crate::prelude::*;
+use bytes::{Buf, BufMut, BytesMut};
+use std::io::{stdin, ErrorKind};
+use std::str::from_utf8;
+use tokio::net::{TcpListener, TcpStream, UdpSocket};
+use tokio::time::{sleep, Duration};
+use tracing::{error, info};
 
 pub async fn udp_server() -> Result<()> {
     let config = Configuration::from_file("./Config.toml");
@@ -95,7 +86,7 @@ pub async fn tcp_server() -> Result<()> {
                     Ok(0) => {
                         error!("Readhalf of the stream is closed.");
                         break;
-                    },
+                    }
                     Ok(n) => {
                         info!("From: {}", stream.local_addr().unwrap());
                         let len = buffer.get_u64() as usize;
@@ -106,7 +97,7 @@ pub async fn tcp_server() -> Result<()> {
                     }
                     Err(ref e) if e.kind() == ErrorKind::WouldBlock => {
                         continue;
-                    },
+                    }
                     Err(e) => {
                         error!("{}", e);
                         break;
